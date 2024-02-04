@@ -8,9 +8,12 @@ class CommandParser {
   }
 
   parseCommand(data) {
-    const parsedData = data.split(' ');
-    const command = parsedData[0];
-    const args = [...parsedData.slice(1)];
+    const [command, ...inputArgs] = data.split(/\s+/);
+    const args =
+      inputArgs
+        .join(' ')
+        .match(/(?:['"]).*?['"]|[^'"\s]+/g)
+        ?.map((arg) => arg.replace(/['"]/g, '')) || [];
 
     if (!this.commands?.[command]) {
       this.showHint();
