@@ -27,7 +27,7 @@ class HashCalculator {
         });
 
       if (isFile) {
-        return await new Promise((resolve) => {
+        await new Promise((resolve) => {
           fs.createReadStream(pathToSource)
             .on('data', (data) => {
               hash.update(data);

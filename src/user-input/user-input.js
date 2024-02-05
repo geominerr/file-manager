@@ -33,18 +33,17 @@ class UserInput {
         }
 
         if (data === 'help') {
-          this.showCurrentDirectory();
           showAvailableCommands();
           resolve();
+          this.showCurrentDirectory();
           this.onInput(callback);
 
           return;
         }
 
-        this.showCurrentDirectory();
         callback(data.trim()).then(() => {
           resolve();
-
+          this.showCurrentDirectory();
           this.onInput(callback);
         });
       });
