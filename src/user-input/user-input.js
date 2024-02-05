@@ -2,6 +2,7 @@ import readline from 'readline';
 import { stdin, stdout } from 'process';
 import { showAvailableCommands } from '../command-parser/hint-command.js';
 import ErrorHandler from '../utils/handler-error.js';
+import Colorant from '../utils/ec-colorant.js';
 
 class UserInput {
   constructor(username) {
@@ -11,22 +12,29 @@ class UserInput {
       input: stdin,
       output: stdout,
     });
-
+    this.colorizer = new Colorant();
+    this.promptMessage = this.colorizer.paintPrompt('\nEnter your command: ');
     this.rl.on('SIGINT', () => process.emit('SIGINT'));
   }
 
   showCurrentDirectory() {
     const currentDir = process.cwd();
 
-    this.rl.output.write(`You are currently in ${currentDir}\n`);
+    this.rl.output.write(
+      this.colorizer.paintCurrDir(`You are currently in ${currentDir}\n`)
+    );
   }
 
   onInput(callback) {
     return new Promise((resolve) => {
-      this.rl.question('\nEnter your command: ', (data) => {
+      this.rl.question(this.promptMessage, (data) => {
         if (data === '.exit') {
           this.rl.write(
-            `Thank you for using File Manager, ${this.username}, goodbye!`
+            this.colorizer.paintFarewell(
+              `Thank you for using File Manager, ${this.colorizer.paintUsername(
+                `${this.username}, goodbye!`
+              )}`
+            )
           );
           this.rl.close();
           resolve();

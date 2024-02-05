@@ -3,6 +3,7 @@ import process from 'process';
 import UserInput from '../user-input/user-input.js';
 import Controller from '../controller/controller.js';
 import ErrorHandler from '../utils/handler-error.js';
+import Colorant from '../utils/ec-colorant.js';
 
 class App {
   errorMessage = `Incorrect argument format. Please use the correct syntax:
@@ -12,6 +13,7 @@ class App {
   username = '';
 
   constructor() {
+    this.colorizer = new Colorant();
     this.checkStartArgs();
     this.handleSigint();
     this.controller = new Controller();
@@ -22,8 +24,8 @@ class App {
   async start() {
     try {
       process.chdir(os.homedir());
-      this.showCurrentDirectory();
       this.showHint();
+      this.showCurrentDirectory();
       this.userInput.onInput(this.controller.run());
     } catch (err) {
       this.errorHandler.handle(err);
@@ -45,30 +47,44 @@ class App {
       }
     }
 
-    console.error(this.errorMessage);
+    console.error(this.colorizer.paintError(this.errorMessage));
     process.exit(1);
   }
 
   showGreeting() {
-    console.log(`Welcome to the File Manager, ${this.username}!`);
+    console.log(
+      this.colorizer.paintHint(
+        `Welcome to the File Manager, ${this.colorizer.paintUsername(
+          this.username
+        )}!`
+      )
+    );
   }
 
   showHint() {
     console.log(
-      `To exit the program, use Ctrl + C or enter '.exit' in the console\nFor a list of available commands, type 'help'.`
+      this.colorizer.paintHint(
+        `To exit the program, use Ctrl + C or enter '.exit' in the console\nFor a list of available commands, type 'help'.`
+      )
     );
   }
 
   showCurrentDirectory() {
     const currentDir = process.cwd();
 
-    console.log(`You are currently in ${currentDir}`);
+    console.log(
+      this.colorizer.paintCurrDir(`You are currently in ${currentDir}`)
+    );
   }
 
   handleSigint() {
     process.on('SIGINT', () => {
       console.log(
-        `\nThank you for using File Manager, ${this.username}, goodbye!`
+        this.colorizer.paintFarewell(
+          `\nThank you for using File Manager, ${this.colorizer.paintUsername(
+            `${this.username}, goodbye! `
+          )}`
+        )
       );
       process.exit(0);
     });

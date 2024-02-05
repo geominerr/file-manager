@@ -1,9 +1,11 @@
 import os from 'os';
 import ErrorHandler from '../utils/handler-error.js';
+import Colorant from '../utils/ec-colorant.js';
 
 class OsOperation {
   constructor() {
     this.errorHandler = new ErrorHandler();
+    this.colorizer = new Colorant();
   }
 
   os(arg) {
@@ -17,7 +19,9 @@ class OsOperation {
   eol() {
     const endOfLine = JSON.stringify(os.EOL);
 
-    console.log(`\nDefault system End-Of-Line: ${endOfLine}`);
+    console.log(
+      this.colorizer.paintResult(`\nDefault system End-Of-Line: ${endOfLine}`)
+    );
   }
 
   cpus() {
@@ -30,19 +34,23 @@ class OsOperation {
       ).toFixed(1)} GHz\n`;
     });
 
-    console.log(message);
+    console.log(this.colorizer.paintResult(message));
   }
 
   homedir() {
-    console.log(`\nHome directory: ${os.homedir}`);
+    console.log(this.colorizer.paintResult(`\nHome directory: ${os.homedir}`));
   }
 
   username() {
-    console.log(`\nUsername: ${os.userInfo().username}`);
+    console.log(
+      this.colorizer.paintResult(`\nUsername: ${os.userInfo().username}`)
+    );
   }
 
   architecture() {
-    console.log(`\nNode.js binary has compiled: ${os.arch}`);
+    console.log(
+      this.colorizer.paintResult(`\nNode.js binary has compiled: ${os.arch}`)
+    );
   }
 }
 

@@ -7,7 +7,6 @@ class Colorant {
     green: '\x1b[32m',
     blue: '\x1b[34m',
     purple: '\x1b[35m',
-    cyan: '\x1b[36m',
     white: '\x1b[37m',
     gray: '\x1b[90m',
     orange: '\x1b[38,5,208m',
@@ -37,18 +36,19 @@ class Colorant {
   }
 
   paintResult(message) {
+    return this.colorize(message, this.colors.brightGreen);
+  }
+
+  paintPrompt(message) {
     return this.colorize(message, this.colors.green);
   }
 
-  paintRainbow(message) {
-    const splitedMessage = message.split(' ');
-    const colors = Object.values(this.colors);
+  paintUsername(message) {
+    return this.colorize(message, this.colors.purple);
+  }
 
-    return splitedMessage
-      .map((item) =>
-        this.colorize(item, colors[Math.ceil(Math.random() * colors.length)])
-      )
-      .join(' ');
+  paintFarewell(message) {
+    return this.colorize(message, this.colors.brightYellow);
   }
 
   colorize(text, escapeCode) {
