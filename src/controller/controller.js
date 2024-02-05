@@ -1,4 +1,6 @@
 import CommandParser from '../command-parser/command-parser.js';
+import FileOperation from '../file-operation/file-operation.js';
+import Navigation from '../navigation/navigation.js';
 import OsOperation from '../os-operation/os-operation.js';
 
 class Controller {
@@ -7,6 +9,8 @@ class Controller {
   constructor() {
     this.commandParser = new CommandParser();
     this.osOperation = new OsOperation();
+    this.navigation = new Navigation();
+    this.fileOperation = new FileOperation();
   }
 
   run() {
