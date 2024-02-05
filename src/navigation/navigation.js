@@ -25,14 +25,17 @@ class Navigation {
   async cd(newPath) {
     console.log(newPath);
     try {
-      if (path.isAbsolute(newPath)) {
-        return process.chdir(newPath);
-      }
-
       const currentPath = process.cwd();
+      const currentDriveRoot = path.parse(currentPath).root;
       const nextPath = path.join(currentPath, newPath);
 
-      process.chdir(newPath);
+      if (path.isAbsolute(newPath) && newPath !== currentDriveRoot) {
+        return process.chdir(newPath);
+      } else if (currentPath !== currentDriveRoot) {
+        return process.chdir(nextPath);
+      }
+
+      console.error(this.rootDirectoryMessage);
     } catch (err) {
       console.error(this.doesntExistsMessage);
     }
