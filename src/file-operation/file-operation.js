@@ -15,18 +15,31 @@ class FileOperation {
       const table = [];
 
       for (const file of files) {
-        const stats = await fs.promises.stat(path.join(currentPath, file));
-        const isFile = stats.isFile();
+        const stats = await fs.promises
+          .stat(path.join(currentPath, file))
+          .catch(() => {});
 
-        const row = {
-          Name: file,
-          Type: isFile ? 'file' : 'directory',
-        };
+        if (stats) {
+          const isFile = stats?.isFile();
 
-        table.push(row);
+          const row = {
+            Name: file,
+            Type: isFile ? 'file' : 'directory',
+          };
+
+          table.push(row);
+        }
       }
 
-      console.table(table);
+      console.table(
+        table.sort((a, b) => {
+          if (a.Type === 'directory' && b.Type === 'directory') {
+            return a.Name.localeCompare(b.Name);
+          }
+
+          return a.Type === 'directory' ? -1 : 1;
+        })
+      );
     } catch (err) {
       this.errorHandler.handle(err);
     }

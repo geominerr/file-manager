@@ -9,7 +9,7 @@ class App {
   errorMessage = `Incorrect argument format. Please use the correct syntax:
   npm run start -- --username=your_username
   npm run start -- --username='your username'`;
-  hintMessage = `To exit the program, use Ctrl + C or enter '.exit' in the console\nFor a list of available commands, type 'help'.\nPlease use either 'single' or "double" quotes for paths containing spaces`;
+  hintMessage = `To exit the program, use Ctrl + C or enter '.exit' in the console\nFor a list of available commands, type 'help'.\nPlease use either 'single' or "double" quotes for paths containing spaces.`;
   variableKey = '--username';
   username = '';
 
