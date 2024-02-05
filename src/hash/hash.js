@@ -1,12 +1,15 @@
 import crypto from 'crypto';
 import path from 'path';
-
 import fs from 'fs';
-import { promises } from 'dns';
+import ErrorHandler from '../utils/handler-error.js';
 
 class HashCalculator {
   errorMessage = `The specified path does not point to a file; it is a directory.`;
   hashAlgorшthm = 'sha256';
+
+  constructor() {
+    this.errorHandler = new ErrorHandler();
+  }
 
   async hash(source) {
     try {
@@ -45,7 +48,7 @@ class HashCalculator {
         });
       }
     } catch (err) {
-      console.error(err.message);
+      this.errorHandler.handle(err);
     }
   }
 }

@@ -1,8 +1,17 @@
 import os from 'os';
+import ErrorHandler from '../utils/handler-error.js';
 
 class OsOperation {
+  constructor() {
+    this.errorHandler = new ErrorHandler();
+  }
+
   os(arg) {
-    this[arg]();
+    try {
+      this[arg]();
+    } catch (err) {
+      this.errorHandler.handle(err);
+    }
   }
 
   eol() {

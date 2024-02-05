@@ -3,9 +3,12 @@ import FileOperation from '../file-operation/file-operation.js';
 import HashCalculator from '../hash/hash.js';
 import Navigation from '../navigation/navigation.js';
 import OsOperation from '../os-operation/os-operation.js';
+import ErrorHandler from '../utils/handler-error.js';
 import CompressionOperation from '../zip/zip.js';
 
 class Controller {
+  hintMessage = `\nInvalid command or args. Please use 'help' to view a list of available commands.`;
+
   constructor() {
     this.commandParser = new CommandParser();
     this.osOperation = new OsOperation();
@@ -13,10 +16,10 @@ class Controller {
     this.fileOperation = new FileOperation();
     this.hash = new HashCalculator();
     this.zipOperation = new CompressionOperation();
+    this.errorHandler = new ErrorHandler();
   }
 
   run() {
-    hintMessage = `\nInvalid command or args. Please use 'help' to view a list of available commands.`;
     return async (command) => {
       try {
         const objCommand = this.commandParser.parseCommand(command);
@@ -25,15 +28,13 @@ class Controller {
           const { keyClass, command, args } = objCommand;
 
           if (!this?.[keyClass]?.[command]) {
-            console.error(this.hintMessage);
-
-            return;
+            throw new Error(this.hintMessage);
           }
 
           await this[keyClass][command](...args);
         }
       } catch (err) {
-        console.error(err);
+        this.errorHandler.handle(err);
       }
     };
   }

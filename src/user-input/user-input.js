@@ -1,9 +1,11 @@
 import readline from 'readline';
 import { stdin, stdout } from 'process';
 import { showAvailableCommands } from '../command-parser/hint-command.js';
+import ErrorHandler from '../utils/handler-error.js';
 
 class UserInput {
   constructor(username) {
+    this.errorHandler = new ErrorHandler();
     this.username = username;
     this.rl = readline.createInterface({
       input: stdin,
@@ -47,7 +49,7 @@ class UserInput {
           this.onInput(callback);
         });
       });
-    });
+    }).catch((err) => this.errorHandler.handle(err));
   }
 }
 

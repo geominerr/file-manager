@@ -2,6 +2,7 @@ import os from 'os';
 import process from 'process';
 import UserInput from '../user-input/user-input.js';
 import Controller from '../controller/controller.js';
+import ErrorHandler from '../utils/handler-error.js';
 
 class App {
   errorMessage = `Incorrect argument format. Please use the correct syntax:
@@ -15,6 +16,7 @@ class App {
     this.handleSigint();
     this.controller = new Controller();
     this.userInput = new UserInput(this.username);
+    this.errorHandler = new ErrorHandler();
   }
 
   async start() {
@@ -24,7 +26,7 @@ class App {
       this.showHint();
       this.userInput.onInput(this.controller.run());
     } catch (err) {
-      console.error(err.message);
+      this.errorHandler.handle(err);
       process.exit(1);
     }
   }

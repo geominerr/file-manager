@@ -2,18 +2,23 @@ import fs from 'fs';
 import path from 'path';
 import zlib from 'zlib';
 import { pipeline } from 'stream/promises';
+import ErrorHandler from '../utils/handler-error.js';
 
 class CompressionOperation {
+  errorMessage =
+    '\nOperation failed! The specified path is a directory, not a file.';
+
+  constructor() {
+    this.errorHandler = new ErrorHandler();
+  }
+
   async compress(...args) {
     try {
       const [source, dest] = args;
       const pathToSource = path.resolve(source);
-      const pathToDestDir = path.dirname(dest);
-      const fileName = path.basename(dest);
-      const pathToDest =
-        fileName.slice(-3) === '.br'
-          ? path.resolve(dest)
-          : path.join(pathToDestDir, fileName + '.br');
+      const pathToDestDir = path.resolve(dest);
+      const fileName = path.basename(pathToSource);
+      const pathToDest = path.join(pathToDestDir, fileName + '.br');
 
       await fs.promises
         .stat(pathToSource)
@@ -28,13 +33,19 @@ class CompressionOperation {
 
       const isDestDirExist = await fs.promises
         .access(pathToDestDir)
-        .catch(() => false);
+        .catch((err) => {
+          if (err.code === 'ENOENT') {
+            return false;
+          }
+
+          throw err;
+        });
 
       if (!isDestDirExist) {
         await fs.promises
           .mkdir(pathToDestDir, { recursive: true })
           .catch((err) => {
-            console.error('Error MKDIR: ', err.message);
+            throw err;
           });
       }
 
@@ -43,10 +54,10 @@ class CompressionOperation {
         zlib.createBrotliCompress(),
         fs.createWriteStream(pathToDest)
       ).catch((err) => {
-        console.error('Error pipeline: ', err.message);
+        throw err;
       });
     } catch (err) {
-      console.error(err.message);
+      this.errorHandler.handle(err);
     }
   }
 
@@ -54,7 +65,8 @@ class CompressionOperation {
     try {
       const [source, dest] = args;
       const pathToSource = path.resolve(source);
-      const pathToDest = path.resolve(dest);
+      const fileName = path.basename(pathToSource);
+      const pathToDest = path.join(dest, fileName);
       const pathToDestDir = path.dirname(pathToDest);
 
       await fs.promises
@@ -70,13 +82,19 @@ class CompressionOperation {
 
       const isDestDirExist = await fs.promises
         .access(pathToDestDir)
-        .catch(() => false);
+        .catch((err) => {
+          if (err.code === 'ENOENT') {
+            return false;
+          }
+
+          throw err;
+        });
 
       if (!isDestDirExist) {
         await fs.promises
           .mkdir(pathToDestDir, { recursive: true })
           .catch((err) => {
-            console.error('Error MKDIR: ', err.message);
+            throw err;
           });
       }
 
@@ -85,10 +103,11 @@ class CompressionOperation {
         zlib.createBrotliDecompress(),
         fs.createWriteStream(pathToDest)
       ).catch((err) => {
-        console.error('Error pipeline: ', err.message);
+        throw err;
       });
     } catch (err) {
-      console.error(err);
+      this.errorHandler.handle(err);
+      console.log(err);
     }
   }
 }

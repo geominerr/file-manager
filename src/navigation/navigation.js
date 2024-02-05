@@ -1,10 +1,15 @@
 import path from 'path';
+import ErrorHandler from '../utils/handler-error.js';
+import Colorant from '../utils/ec-colorant.js';
 
 class Navigation {
-  rootDirectoryMessage =
+  errorMessage =
     '\nOperation failed! You are already in the root directory of the drive.';
-  doesntExistsMessage =
-    '\nThe path does not exist, please check the input for correctness.';
+
+  constructor() {
+    this.errorHandler = new ErrorHandler();
+    this.colorant = new Colorant();
+  }
 
   async up() {
     try {
@@ -16,14 +21,13 @@ class Navigation {
         return process.chdir(nextPath);
       }
 
-      console.error(this.rootDirectoryMessage);
+      throw new Error(this.errorMessage);
     } catch (err) {
-      console.error(err.message);
+      this.errorHandler.handle(err);
     }
   }
 
   async cd(newPath) {
-    console.log(newPath);
     try {
       const currentPath = process.cwd();
       const currentDriveRoot = path.parse(currentPath).root;
@@ -35,9 +39,9 @@ class Navigation {
         return process.chdir(nextPath);
       }
 
-      console.error(this.rootDirectoryMessage);
+      throw new Error(this.errorMessage);
     } catch (err) {
-      console.error(this.doesntExistsMessage);
+      this.errorHandler.handle(err);
     }
   }
 }

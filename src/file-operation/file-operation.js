@@ -1,9 +1,12 @@
 import path from 'path';
 import fs from 'fs';
 import { pipeline } from 'stream/promises';
+import ErrorHandler from '../utils/handler-error.js';
 
 class FileOperation {
-  // TO DO ERROR HANDLER !!!
+  constructor() {
+    this.errorHandler = new ErrorHandler();
+  }
 
   async ls() {
     try {
@@ -25,7 +28,7 @@ class FileOperation {
 
       console.table(table);
     } catch (err) {
-      console.error(err);
+      this.errorHandler.handle(err);
     }
   }
 
@@ -43,13 +46,13 @@ class FileOperation {
           resolve();
         });
         readableStream.on('error', (err) => {
-          console.error(err.message);
+          this.errorHandler.handle(err);
 
           resolve();
         });
       });
     } catch (err) {
-      console.error(err.message);
+      this.errorHandler.handle(err);
     }
   }
 
@@ -60,7 +63,7 @@ class FileOperation {
 
       await fs.promises.writeFile(pathToDest, '');
     } catch (err) {
-      console.error(err.message);
+      this.errorHandler.handle(err);
     }
   }
 
@@ -69,11 +72,11 @@ class FileOperation {
       const [source, dest] = args;
       const pathToSource = path.resolve(source);
       const sourceDir = path.dirname(pathToSource);
-      const pathToDest = path.resolve(sourceDir, dest);
+      const pathToDest = path.join(sourceDir, dest);
 
       await fs.promises.rename(pathToSource, pathToDest);
     } catch (err) {
-      console.error(err.message);
+      this.errorHandler.handle(err);
     }
   }
 
@@ -98,18 +101,18 @@ class FileOperation {
         await fs.promises
           .mkdir(pathToDestDir, { recursive: true })
           .catch((err) => {
-            console.error('Error MKDIR: ', err.message);
+            throw err;
           });
       }
 
-      const readableStream = fs.createReadStream(pathToSource);
-      const writebaleStream = fs.createWriteStream(pathToDest);
-
-      await pipeline(readableStream, writebaleStream).catch((err) => {
-        console.error('Error pipeline: ', err.message);
+      await pipeline(
+        fs.createReadStream(pathToSource),
+        fs.createWriteStream(pathToDest)
+      ).catch((err) => {
+        throw err;
       });
     } catch (err) {
-      console.error(err.message);
+      this.errorHandler.handle(err);
     }
   }
 
@@ -121,7 +124,7 @@ class FileOperation {
       await this.cp(...args);
       await fs.promises.rm(pathToSource);
     } catch (err) {
-      console.error(err.message);
+      this.errorHandler.handle(err);
     }
   }
 
@@ -133,7 +136,7 @@ class FileOperation {
         throw err;
       });
     } catch (err) {
-      console.error(err.message);
+      this.errorHandler.handle(err);
     }
   }
 
