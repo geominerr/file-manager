@@ -25,6 +25,6 @@ export const commands = {
   },
   decompress: {
     args: ['path_to_file', 'path_to_destination'],
-    keyClass: 'zipOperaion',
+    keyClass: 'zipOperation',
   },
 };
