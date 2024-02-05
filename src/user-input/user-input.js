@@ -21,7 +21,7 @@ class UserInput {
     const currentDir = process.cwd();
 
     this.rl.output.write(
-      this.colorizer.paintCurrDir(`You are currently in ${currentDir}\n`)
+      this.colorizer.paintCurrDir(`\nYou are currently in ${currentDir}\n`)
     );
   }
 

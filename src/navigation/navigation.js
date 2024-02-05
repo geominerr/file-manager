@@ -3,8 +3,7 @@ import ErrorHandler from '../utils/handler-error.js';
 import Colorant from '../utils/ec-colorant.js';
 
 class Navigation {
-  errorMessage =
-    '\nOperation failed! You are already in the root directory of the drive.';
+  errorMessage = '\nYou are already in the root directory of the drive.';
 
   constructor() {
     this.errorHandler = new ErrorHandler();
@@ -31,11 +30,11 @@ class Navigation {
     try {
       const currentPath = process.cwd();
       const currentDriveRoot = path.parse(currentPath).root;
-      const nextPath = path.join(currentPath, newPath);
+      const nextPath = path.resolve(currentPath, newPath);
 
-      if (path.isAbsolute(newPath) && newPath !== currentDriveRoot) {
+      if (path.isAbsolute(newPath) && currentPath !== currentDriveRoot) {
         return process.chdir(newPath);
-      } else if (currentPath !== currentDriveRoot) {
+      } else if (nextPath !== currentPath) {
         return process.chdir(nextPath);
       }
 

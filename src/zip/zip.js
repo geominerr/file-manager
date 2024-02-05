@@ -5,8 +5,7 @@ import { pipeline } from 'stream/promises';
 import ErrorHandler from '../utils/handler-error.js';
 
 class CompressionOperation {
-  errorMessage =
-    '\nOperation failed! The specified path is a directory, not a file.';
+  errorMessage = '\n The specified path is a directory, not a file.';
 
   constructor() {
     this.errorHandler = new ErrorHandler();

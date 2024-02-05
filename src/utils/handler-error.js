@@ -3,6 +3,7 @@ import Colorant from './ec-colorant.js';
 class ErrorHandler {
   static instance = null;
   defaultMessage = 'An unknown error has occurred. Please try again.';
+  startMessage = 'Operation failed!\n';
 
   constructor() {
     if (!ErrorHandler.instance) {
@@ -18,10 +19,18 @@ class ErrorHandler {
     // TO DO HANDLING!!!
 
     if (err?.message) {
-      return console.error(this.colorant.paintError(err.message));
+      const errorMessage = this.colorant.paintError(
+        `${
+          err.message?.startsWith('\nInvalid command or args')
+            ? ''
+            : this.startMessage
+        }${err.message}`
+      );
+
+      return console.error(errorMessage);
     }
 
-    return console.error(this.colorant.paintError(this.defaultMessage));
+    return console.error(this.colorant.paintError(`${this.defaultMessage}`));
   }
 }
 
